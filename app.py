@@ -97,3 +97,81 @@ st.download_button(
 )
 
 st.success("✔ Risk assessment completed successfully")
+def generate_pdf(asset, risk_level, explanation, action):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+
+    pdf = SimpleDocTemplate(
+        temp_file.name,
+        pagesize=A4,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=40,
+        bottomMargin=40
+    )
+
+    styles = getSampleStyleSheet()
+    content = []
+
+    # Title
+    content.append(Paragraph(
+        "<b><font size=18>Risk Assessment Report</font></b>",
+        styles["Title"]
+    ))
+    content.append(Spacer(1, 0.3 * inch))
+
+    # Asset section
+    content.append(Paragraph(
+        f"<b>What was assessed:</b><br/>{asset if asset else 'Not specified'}",
+        styles["Normal"]
+    ))
+    content.append(Spacer(1, 0.2 * inch))
+
+    # Risk level with color
+    if risk_level == "High":
+        color = red
+        risk_text = "HIGH RISK"
+    elif risk_level == "Medium":
+        color = orange
+        risk_text = "MEDIUM RISK"
+    else:
+        color = green
+        risk_text = "LOW RISK"
+
+    content.append(Paragraph(
+        f"<b>Risk Level:</b> <font color='{color.hexval()}'>{risk_text}</font>",
+        styles["Normal"]
+    ))
+    content.append(Spacer(1, 0.2 * inch))
+
+    # Explanation
+    content.append(Paragraph(
+        "<b>What does this mean?</b>",
+        styles["Heading3"]
+    ))
+    content.append(Paragraph(explanation, styles["Normal"]))
+    content.append(Spacer(1, 0.2 * inch))
+
+    # Action
+    content.append(Paragraph(
+        "<b>Recommended Action:</b>",
+        styles["Heading3"]
+    ))
+    content.append(Paragraph(action, styles["Normal"])) 
+    from reportlab.lib.pagesizes import A4
+from reportlab.lib.colors import red, green, orange, black
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
+import tempfile
+
+
+    # Footer
+    content.append(Spacer(1, 0.5 * inch))
+    content.append(Paragraph(
+        "<font size=9 color='grey'>Generated using Risk Assessment Calculator</font>",
+        styles["Normal"]
+    ))
+
+    pdf.build(content)
+    return temp_file.name
+
