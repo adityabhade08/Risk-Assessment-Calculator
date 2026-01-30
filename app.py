@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 import tempfile
 
 from reportlab.lib.pagesizes import A4
@@ -15,14 +16,14 @@ st.set_page_config(
 )
 
 st.title("⚠️ Risk Assessment Report")
-st.write("A simple, human-readable cybersecurity risk report.")
+st.write("A simple, human-friendly risk report anyone can understand.")
 
 st.divider()
 
 # ---------------- USER INPUT ----------------
 asset = st.text_input(
     "🖥️ What are you assessing?",
-    placeholder="Example: Customer Database, Web Application, Employee Laptop"
+    placeholder="Example: Web Application, Customer Data, Employee Laptop"
 )
 
 likelihood = st.selectbox(
@@ -79,19 +80,21 @@ else:
 
 # ---------------- REPORT DISPLAY ----------------
 st.divider()
-st.subheader("📄 Final Risk Summary")
+st.subheader("📄 Final Risk Report")
 
 st.markdown(
     f"""
-    **Asset / Process Assessed:** {asset if asset else "Not specified"}  
+    ### 🔍 What was assessed?
+    **{asset if asset else "Not specified"}**
 
-    **Risk Level:** {risk_level} Risk  
+    ### 🚦 Risk Level
+    **{risk_level} Risk**
 
-    **What does this mean?**  
+    ### 🧠 What does this mean?
     {explanation}
 
-    **What should be done next?**  
-    {action}
+    ### ✅ What should be done next?
+    **{action}**
     """
 )
 
@@ -111,58 +114,32 @@ def generate_pdf(asset, risk_level, explanation, action, color):
     styles = getSampleStyleSheet()
     content = []
 
-    # Title
     content.append(Paragraph(
-        "<b><font size=20>Cybersecurity Risk Assessment Report</font></b>",
+        "<b><font size=20>Risk Assessment Report</font></b>",
         styles["Title"]
     ))
     content.append(Spacer(1, 0.4 * inch))
 
-    # Asset
     content.append(Paragraph(
         f"<b>Asset / Process Assessed:</b><br/>{asset if asset else 'Not specified'}",
         styles["Normal"]
     ))
-    content.append(Spacer(1, 0.25 * inch))
+    content.append(Spacer(1, 0.3 * inch))
 
-    # Risk level
     content.append(Paragraph(
         f"<b>Risk Level:</b> <font color='{color.hexval()}'><b>{risk_level.upper()} RISK</b></font>",
         styles["Normal"]
     ))
-    content.append(Spacer(1, 0.25 * inch))
+    content.append(Spacer(1, 0.3 * inch))
 
-    # Explanation
     content.append(Paragraph("<b>What does this mean?</b>", styles["Heading3"]))
     content.append(Paragraph(explanation, styles["Normal"]))
-    content.append(Spacer(1, 0.25 * inch))
+    content.append(Spacer(1, 0.3 * inch))
 
-    # Action
     content.append(Paragraph("<b>Recommended Action</b>", styles["Heading3"]))
     content.append(Paragraph(action, styles["Normal"]))
-    content.append(Spacer(1, 0.4 * inch))
+    content.append(Spacer(1, 0.6 * inch))
 
-    # ---------------- RISK ASSESSMENT STEPS ----------------
-    content.append(Paragraph("<b>Risk Assessment Steps Used</b>", styles["Heading2"]))
-    content.append(Spacer(1, 0.2 * inch))
-
-    steps = [
-        "1. Identify the asset or process that needs protection.",
-        "2. Identify the potential cybersecurity risk related to the asset.",
-        "3. Assess how likely the risk is to occur.",
-        "4. Assess the impact if the risk occurs.",
-        "5. Calculate the overall risk level based on likelihood and impact.",
-        "6. Interpret the risk in simple terms for better understanding.",
-        "7. Recommend appropriate actions based on the risk level.",
-        "8. Generate a clear and easy-to-read risk report."
-    ]
-
-    for step in steps:
-        content.append(Paragraph(step, styles["Normal"]))
-        content.append(Spacer(1, 0.1 * inch))
-
-    # Footer
-    content.append(Spacer(1, 0.5 * inch))
     content.append(Paragraph(
         "<font size=9 color='grey'>Generated using Risk Assessment Calculator</font>",
         styles["Normal"]
@@ -185,4 +162,4 @@ if st.button("Generate Styled PDF Report"):
             mime="application/pdf"
         )
 
-st.success("✔ Risk assessment report generated successfully")
+st.success("✔ Risk report generated successfully")
