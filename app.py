@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+# Page configuration
 st.set_page_config(
     page_title="Risk Assessment Calculator",
     page_icon="⚠️",
@@ -8,12 +9,12 @@ st.set_page_config(
 )
 
 st.title("⚠️ Risk Assessment Calculator")
-st.write("Calculate risk levels based on Likelihood and Impact (GRC Methodology).")
+st.write("Visual risk assessment using standard GRC methodology (Likelihood × Impact).")
 
 st.divider()
 
 # User inputs
-asset = st.text_input("🖥️ Asset / Process Name")
+asset = st.text_input("🖥️ Asset / Process Name", placeholder="e.g. Web Application, Customer Database")
 
 likelihood = st.selectbox(
     "📊 Likelihood",
@@ -40,22 +41,39 @@ impact = st.selectbox(
 # Risk calculation
 risk_score = likelihood * impact
 
-# Risk level logic
+# Risk level logic with visuals
 if risk_score <= 5:
     risk_level = "Low"
+    risk_color = "🟢 LOW RISK"
 elif 6 <= risk_score <= 12:
     risk_level = "Medium"
+    risk_color = "🟡 MEDIUM RISK"
 else:
     risk_level = "High"
+    risk_color = "🔴 HIGH RISK"
 
 st.divider()
 
-st.subheader("📈 Risk Assessment Result")
+# Visual summary section
+st.subheader("📌 Risk Summary")
 
-st.metric("Risk Score", risk_score)
-st.metric("Risk Level", risk_level)
+col1, col2 = st.columns(2)
+col1.metric("Risk Score", risk_score)
+col2.metric("Risk Level", risk_color)
 
-# Risk table
+st.markdown(
+    f"""
+    ### 🧾 Assessment Overview
+    - **Asset / Process:** `{asset if asset else "Not Specified"}`
+    - **Likelihood Score:** `{likelihood}`
+    - **Impact Score:** `{impact}`
+    - **Overall Risk Classification:** **{risk_level}**
+    """
+)
+
+st.divider()
+
+# Risk register table
 data = {
     "Asset / Process": [asset if asset else "Not Specified"],
     "Likelihood": [likelihood],
